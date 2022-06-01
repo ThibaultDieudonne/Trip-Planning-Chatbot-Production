@@ -15,7 +15,7 @@ from botbuilder.dialogs.prompts import (
 from .cancel_and_help_dialog import CancelAndHelpDialog
 
 
-class DateResolverDialog(CancelAndHelpDialog):
+class EndDateDialog(CancelAndHelpDialog):
     """Resolve the date"""
 
     def __init__(
@@ -23,13 +23,13 @@ class DateResolverDialog(CancelAndHelpDialog):
         dialog_id: str = None,
         telemetry_client: BotTelemetryClient = NullTelemetryClient(),
     ):
-        super(DateResolverDialog, self).__init__(
-            dialog_id or DateResolverDialog.__name__, telemetry_client
+        super(EndDateDialog, self).__init__(
+            dialog_id or EndDateDialog.__name__, telemetry_client
         )
         self.telemetry_client = telemetry_client
 
         date_time_prompt = DateTimePrompt(
-            DateTimePrompt.__name__, DateResolverDialog.datetime_prompt_validator
+            DateTimePrompt.__name__, EndDateDialog.datetime_prompt_validator
         )
         date_time_prompt.telemetry_client = telemetry_client
 
@@ -49,9 +49,9 @@ class DateResolverDialog(CancelAndHelpDialog):
         """Prompt for the date."""
         timex = step_context.options
 
-        prompt_msg = "On what date would you like to travel?"
+        prompt_msg = "On what date would you like to come back?"
         reprompt_msg = (
-            "I'm sorry, for best results, please enter your travel "
+            "I'm sorry, for best results, please enter your return travel "
             "date including the month, day and year."
         )
 

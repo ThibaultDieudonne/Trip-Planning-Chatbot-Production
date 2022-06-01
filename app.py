@@ -29,7 +29,7 @@ from botbuilder.integration.applicationinsights.aiohttp import (
 
 from config import DefaultConfig
 from dialogs import MainDialog, BookingDialog
-from bots import DialogAndWelcomeBot
+from bots import DialogBot as DialogAndWelcomeBot
 
 from adapter_with_error_handler import AdapterWithErrorHandler
 from flight_booking_recognizer import FlightBookingRecognizer
