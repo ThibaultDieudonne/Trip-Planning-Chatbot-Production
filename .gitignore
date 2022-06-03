@@ -4,3 +4,4 @@ __pycache__
 .pytest_cache
 run.bat
 test.bat
+deploy.bat

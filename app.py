@@ -89,6 +89,12 @@ async def messages(req: Request) -> Response:
 APP = web.Application(middlewares=[bot_telemetry_middleware, aiohttp_error_middleware])
 APP.router.add_post("/api/messages", messages)
 
+def run(argv):
+    try:
+        web.run_app(APP, host="localhost", port=CONFIG.PORT)
+    except Exception as error:
+        raise error
+
 if __name__ == "__main__":
     try:
         web.run_app(APP, host="localhost", port=CONFIG.PORT)
