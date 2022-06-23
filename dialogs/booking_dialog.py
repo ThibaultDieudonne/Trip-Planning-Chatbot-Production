@@ -130,6 +130,7 @@ class BookingDialog(CancelAndHelpDialog):
 
         return await step_context.next(booking_details.budget)
 
+
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Complete the interaction and end the dialog."""
         if step_context.result:

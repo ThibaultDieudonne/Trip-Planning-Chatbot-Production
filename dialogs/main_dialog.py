@@ -38,7 +38,7 @@ class MainDialog(ComponentDialog):
         booking_dialog.telemetry_client = self.telemetry_client
 
         wf_dialog = WaterfallDialog(
-            "WFDialog", [self.intro_step, self.act_step, self.final_step]
+            "WFDialog", [self.intro_step, self.act_step, self.review_step, self.final_step]
         )
         wf_dialog.telemetry_client = self.telemetry_client
 
@@ -76,6 +76,8 @@ class MainDialog(ComponentDialog):
         )
 
     async def act_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        # Store user request
+        step_context.values["user_request"] = str(step_context.result)
         if not self._luis_recognizer.is_configured:
             # LUIS is not configured, we just run the BookingDialog path with an empty BookingDetailsInstance.
             return await step_context.begin_dialog(
@@ -88,7 +90,6 @@ class MainDialog(ComponentDialog):
         )
 
         if intent == Intent.BOOK_FLIGHT.value and luis_result:
-
             # Run the BookingDialog giving it whatever details we have from the LUIS call.
             return await step_context.begin_dialog(self._booking_dialog_id, luis_result)
 
@@ -103,21 +104,26 @@ class MainDialog(ComponentDialog):
 
         return await step_context.next(None)
 
-    async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def review_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         # If the child dialog ("BookingDialog") was cancelled or the user failed to confirm,
         # the Result here will be null.
         if step_context.result is not None:
             result = step_context.result
-
-            # Now we have all the booking details call the booking service.
-
-            # If the call to the booking service was successful tell the user.
-            # time_property = Timex(result.travel_date)
-            # travel_date_msg = time_property.to_natural_language(datetime.now())
-            msg_txt = f"I understood you want to go to {result.destination} from {result.origin}, going on {result.start_date}, and returning on {result.end_date}, for a maximum budget of {result.budget}."
+            msg_txt = f"I understood you want to go to {result.destination} from {result.origin}, going on {result.start_date}, and returning on {result.end_date}, for a maximum budget of {result.budget} per person."
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
+        return await step_context.prompt(
+            TextPrompt.__name__,
+            PromptOptions(
+                prompt=MessageFactory.text("Did I manage to understand your request correctly?")
+            ),
+        )
 
+
+    async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        user_review = str(step_context.result).lower()
+        if "n" in user_review and not "y" in user_review:
+            self.telemetry_client.track_exception("Bad Answer", properties = {"user_request": step_context.values['user_request']})
         prompt_message = "What else can I do for you?"
         return await step_context.replace_dialog(self.id, prompt_message)
 
