@@ -9,7 +9,7 @@ from trip_details import TripDetails
 
 
 class Intent(Enum):
-    FIND_TRIP = "Find trip"
+    FIND_TRIP = "Find_trip"
     CANCEL = "Cancel"
     NONE_INTENT = "None"
 
