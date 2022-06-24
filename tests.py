@@ -14,7 +14,7 @@ class TestAsync(AsyncTestCase, unittest.TestCase):
         reply = await self.client.send_activity("hello")
         self.assertEqual(reply.text, 'What can I help you with today?')
         reply = await self.client.send_activity("i want to travel")
-        self.assertEqual(reply.text, "Sorry, I didn't get that. Please try asking in a different way")
+        self.assertEqual(reply.text, "To what city would you like to travel?")
 
 
 class Test(unittest.TestCase):
