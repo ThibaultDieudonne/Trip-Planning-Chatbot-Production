@@ -4,14 +4,6 @@
     {
       "name": "Find trip",
       "features": []
-    },
-    {
-      "name": "Cancel",
-      "features": []
-    },
-    {
-      "name": "None",
-      "features": []
     }
   ],
   "entities": [
@@ -22167,31 +22159,6 @@
           "children": []
         }
       ]
-    },
-    {
-      "text": "bye",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "cancel",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "nothing",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "exit",
-      "intent": "Cancel",
-      "entities": []
-    },
-    {
-      "text": "ignore",
-      "intent": "Cancel",
-      "entities": []
     }
   ],
   "versionId": "1.0",
