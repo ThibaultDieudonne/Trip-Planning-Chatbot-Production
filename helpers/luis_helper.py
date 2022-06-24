@@ -5,11 +5,11 @@ from typing import Dict
 from botbuilder.ai.luis import LuisRecognizer
 from botbuilder.core import IntentScore, TopIntent, TurnContext
 
-from booking_details import BookingDetails
+from trip_details import TripDetails
 
 
 class Intent(Enum):
-    BOOK_FLIGHT = "Book_flight"
+    FIND_TRIP = "Find trip"
     CANCEL = "Cancel"
     NONE_INTENT = "None"
 
@@ -38,8 +38,8 @@ class LuisHelper:
         intent = None
 
         try:
+            print(turn_context)
             recognizer_result = await luis_recognizer.recognize(turn_context)
-
             intent = (
                 sorted(
                     recognizer_result.intents,
@@ -50,8 +50,8 @@ class LuisHelper:
                 else None
             )
 
-            if intent == Intent.BOOK_FLIGHT.value:
-                result = BookingDetails()
+            if intent == Intent.FIND_TRIP.value:
+                result = TripDetails()
 
                 to_entities = recognizer_result.entities.get("$instance", {}).get(
                     "to", []

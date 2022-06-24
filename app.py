@@ -28,11 +28,11 @@ from botbuilder.integration.applicationinsights.aiohttp import (
 )
 
 from config import DefaultConfig
-from dialogs import MainDialog, BookingDialog
+from dialogs import MainDialog, TripFindingDialog
 from bots import DialogBot as DialogAndWelcomeBot
 
 from adapter_with_error_handler import AdapterWithErrorHandler
-from flight_booking_recognizer import FlightBookingRecognizer
+from trip_finding_recognizer import TripFindingRecognizer
 
 CONFIG = DefaultConfig()
 
@@ -63,9 +63,9 @@ TELEMETRY_LOGGER_MIDDLEWARE = TelemetryLoggerMiddleware(telemetry_client=TELEMET
 ADAPTER.use(TELEMETRY_LOGGER_MIDDLEWARE)
 
 # Create dialogs and Bot
-RECOGNIZER = FlightBookingRecognizer(CONFIG)
-BOOKING_DIALOG = BookingDialog()
-DIALOG = MainDialog(RECOGNIZER, BOOKING_DIALOG, telemetry_client=TELEMETRY_CLIENT)
+RECOGNIZER = TripFindingRecognizer(CONFIG)
+TRIP_FINDING_DIALOG = TripFindingDialog()
+DIALOG = MainDialog(RECOGNIZER, TRIP_FINDING_DIALOG, telemetry_client=TELEMETRY_CLIENT)
 BOT = DialogAndWelcomeBot(CONVERSATION_STATE, USER_STATE, DIALOG, TELEMETRY_CLIENT)
 
 

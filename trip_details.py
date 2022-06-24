@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 
-class BookingDetails:
+class TripDetails:
     def __init__(
         self,
         destination: str = None,

@@ -13,7 +13,7 @@ from botbuilder.core import (
 from config import DefaultConfig
 
 
-class FlightBookingRecognizer(Recognizer):
+class TripFindingRecognizer(Recognizer):
     def __init__(
         self, configuration: DefaultConfig, telemetry_client: BotTelemetryClient = None
     ):
@@ -27,12 +27,16 @@ class FlightBookingRecognizer(Recognizer):
         if luis_is_configured:
             # Set the recognizer options depending on which endpoint version you want to use e.g v2 or v3.
             # More details can be found in https://docs.microsoft.com/azure/cognitive-services/luis/luis-migration-api-v3
+            #luis_application = LuisApplication(
+            #    configuration.LUIS_APP_ID,
+            #    configuration.LUIS_API_KEY,
+            #    "https://" + configuration.LUIS_API_HOST_NAME,
+            #)
             luis_application = LuisApplication(
-                configuration.LUIS_APP_ID,
-                configuration.LUIS_API_KEY,
-                "https://" + configuration.LUIS_API_HOST_NAME,
+                "90974b1d-1c83-4a16-8d39-ca737e3821e0",
+                "d9f9605f09fc4210977f544c38dd2f39",
+                "https://" + "westus.api.cognitive.microsoft.com",
             )
-
             options = LuisPredictionOptions()
             options.telemetry_client = telemetry_client or NullTelemetryClient()
 
@@ -46,4 +50,5 @@ class FlightBookingRecognizer(Recognizer):
         return self._recognizer is not None
 
     async def recognize(self, turn_context: TurnContext) -> RecognizerResult:
+
         return await self._recognizer.recognize(turn_context)
