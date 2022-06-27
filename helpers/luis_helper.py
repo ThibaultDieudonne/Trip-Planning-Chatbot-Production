@@ -77,12 +77,18 @@ class LuisHelper:
                 if start_date_entities:
                     result.start_date = start_date_entities[0]["timex"][0]
                     dates.append(result.start_date)
+                    if len(start_date_entities) > 1:
+                        result.end_date = start_date_entities[1]["timex"][0]
+                        dates.append(result.end_date)
 
                 end_date_entities = recognizer_result.entities.get("end_date", [])
 
                 if end_date_entities:
-                    result.end_date = start_date_entities[0]["timex"][0]
+                    result.end_date = end_date_entities[0]["timex"][0]
                     dates.append(result.end_date)
+                    if len(end_date_entities) > 1:
+                        result.start_date = end_date_entities[1]["timex"][0]
+                        dates.append(result.start_date)
 
                 other_date_entities = recognizer_result.entities.get("datetime", [])
 
