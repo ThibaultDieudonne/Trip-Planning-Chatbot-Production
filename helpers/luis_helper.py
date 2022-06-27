@@ -38,7 +38,6 @@ class LuisHelper:
         intent = None
 
         try:
-            print(turn_context)
             recognizer_result = await luis_recognizer.recognize(turn_context)
             intent = (
                 sorted(
@@ -71,20 +70,33 @@ class LuisHelper:
                 if len(budget_entities ) > 0:
                     result.budget = budget_entities[0]["text"].capitalize()
                     
+                dates = []
 
-                start_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "start_date", []
-                )
+                start_date_entities = recognizer_result.entities.get("start_date", [])
 
                 if start_date_entities:
-                    result.start_date = start_date_entities[0]["text"]
+                    result.start_date = start_date_entities[0]["timex"][0]
+                    dates.append(result.start_date)
 
-                end_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "end_date", []
-                )
+                end_date_entities = recognizer_result.entities.get("end_date", [])
+
                 if end_date_entities:
-                    result.end_date = start_date_entities[0]["text"]
+                    result.end_date = start_date_entities[0]["timex"][0]
+                    dates.append(result.end_date)
 
+                other_date_entities = recognizer_result.entities.get("datetime", [])
+
+                if len(other_date_entities):
+                    datetime = other_date_entities[0]["timex"][0]
+                    if "," in datetime:
+                        dates = datetime.replace("(", "").split(",")
+                    else:
+                        dates.append(datetime)
+                    if len(dates) > 1:
+                        if dates[0] > dates[1]:
+                            dates[0], dates[1] = dates[1], dates[0]
+                        result.start_date = dates[0]
+                        result.end_date = dates[1]
 
         except Exception as exception:
             print(exception)
