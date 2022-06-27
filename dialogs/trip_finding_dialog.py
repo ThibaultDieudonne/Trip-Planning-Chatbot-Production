@@ -55,7 +55,6 @@ class TripFindingDialog(CancelAndHelpDialog):
     ) -> DialogTurnResult:
         """Prompt for destination."""
         trip_details = step_context.options
-
         if trip_details.destination is None:
             return await step_context.prompt(
                 TextPrompt.__name__,
@@ -89,9 +88,7 @@ class TripFindingDialog(CancelAndHelpDialog):
         trip_details = step_context.options
 
         trip_details.origin = step_context.result
-        if not trip_details.start_date or self.is_ambiguous(
-            trip_details.start_date
-        ):
+        if not trip_details.start_date:
             return await step_context.begin_dialog(
                 StartDateDialog.__name__, trip_details.start_date
             )
@@ -106,9 +103,7 @@ class TripFindingDialog(CancelAndHelpDialog):
         trip_details = step_context.options
 
         trip_details.start_date = step_context.result
-        if not trip_details.end_date or self.is_ambiguous(
-            trip_details.end_date
-        ):
+        if not trip_details.end_date:
             return await step_context.begin_dialog(
                 EndDateDialog.__name__, trip_details.end_date
             )

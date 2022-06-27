@@ -71,23 +71,19 @@ class LuisHelper:
                 if len(budget_entities ) > 0:
                     result.budget = budget_entities[0]["text"].capitalize()
                     
+
                 start_date_entities = recognizer_result.entities.get("$instance", {}).get(
                     "start_date", []
                 )
+
                 if start_date_entities:
-                    timex = start_date_entities[0]["timex"]
-                    if timex:
-                        datetime = timex[0].split("T")[0]
-                        result.start_date  = datetime
+                    result.start_date = start_date_entities[0]["text"]
 
                 end_date_entities = recognizer_result.entities.get("$instance", {}).get(
                     "end_date", []
                 )
                 if end_date_entities:
-                    timex = end_date_entities[0]["timex"]
-                    if timex:
-                        datetime = timex[0].split("T")[0]
-                        result.end_date  = datetime
+                    result.end_date = start_date_entities[0]["text"]
 
 
         except Exception as exception:
