@@ -1,0 +1,67 @@
+1 - Bonjour, ...
+
+2 - Ce projet est réalisé pour l'agence Fly Me, qui propose des voyages tout compris pour les particuliers et les entreprises. 
+L'agence a lancé un projet de développement d’un chatbot pour aider les utilisateurs à choisir une offre de voyage.
+La première étape de ce projet est de construire un produit minimum viable, qui permet de réserver uniquement le billet d’avion.
+En l'occurence, le projet consiste à réaliser la V1 de cette première étape.
+Le bot doit pouvoir identifier cinq éléments dans la demande de l’utilisateur: [LIRE]
+Si des éléments manquent dans la demande, le chatbot doit poser une question pour chaque information manquante.
+Les objectifs de ce projet sont également de déployer le chatbot en production à l'aide des services Azure, de mettre en place une supervision et une méthodologie de mise à jour.
+
+3 - Le jeu de données utilisée dans ce projet se nomme Frames et a été publié par Microsoft. Il contient un gros millier de conversations entre un chatbot et des utilisateurs.
+Ce jeu de données couvre des cas plus larges que ceux prévus dans ce projet. On trouvera notamment des requêtes concernant le nombre de voyageurs, ou le type d'hôtel souhaité pour le voyage. 
+Dans chaque conversation, le premier message est une demande de l'utilisateur contenant des détails sur le voyage souhaité.
+Les messages suivants concernent des détails de réservation comme la disponibilité des vols et des hôtels, ou encore les services disponibles. Ces données ne sont pas pertinentes pour ce projet.
+Le jeu de données contient la labellisation de chaque message, ainsi que des résultats d'API de recherche de vols ou d'hôtels.
+
+4 - LUIS est le service de compréhension du language de Microsoft. Il s'agit d'une technologie propriétaire qui fonctionne avec Microsoft Azure.
+Ce service permet d'entraîner facilement des modèles. Il est même possible de créer des modèles depuis l'interface web, mais pour ce projet il était demandé de passer par un script de configuration.
+Un modèle possède deux catégories d'attributs:
+des Intents, qui représentent l'intention de l'utilisateur, donc dans notre cas trouver un vol, et des Entities, qui sont les types d'informations que l'on veut récupérer dans les messages des utilisateurs.
+Ce service propose aussi des modules pré-entraînés pour certaines fonctionnalités courantes, comme identifier un email, un âge, ou des dates. Dans mon cas j'utilise le module datetimeV2, qui permet de repérer les dates.
+Ce module propose une gestion par rôles. J'ai donc labellisé mon jeu de données de manière appropriée, en créant les rôles start_date et end_date. Le problème, c'est que ce module ne se ré-entraîne pas lors de l'entraînement du modèle.
+Ceci fait que le module datetimev2 labellise de lui même des informations qui ne nous interessent pas. Comme le jeu de donnée est assez petit et éparse, les rôles ne sont donc presque jamais corretement attribués.
+S'ajoute à ça le fait que le format des dates identifié n'est pas unique. Des fois plusieurs dates sont identifiées, d'autres fois plusieurs dates sont concaténées en une seule valeur de plage.
+Tout ceci a impliqué que je développe un parser pour traiter les données issues de ce module. Il a fallu traiter les différents formats et types d'acquisition. Lorsque deux date sont récupérées, il suffit de les comparer pour les attribuer.
+S'il y en a qu'une seule et qqu'elle n'a pas été labellisée selon un rôle, alors elle est ignorée.
+J'ai rencontré des cas étranges, comme des exemples ou les deux dates ont été labélisées comme date de départ, ce qui a impliqué de gérrer aussi ce genre de cas.
+
+5 - Pour la préparation des données, j'ai commencé par récupérer le premier message de chaque conversation.
+J'ai ensuite extrait les informations utiles au projet, ainsi que la position des informations dans la requête, c'est-à-dire la postition du caractère de début et de fin de chaque information.
+Ceci est necessaire au modèle que l'on va entraîner, notamment pour éviter toute ambiguité dans les messages contenant plusieurs fois la même expression dans des contextes différents.
+Le reste du script permet d'écrire un fichier json permettant d'enregistrer le modèle. Ce fichier contient la déclaration de l'intent, des entities, et de tous les paramètres de version.
+Il contient également nos exemples labellisés. J'ai ajouté une option pour séparer mon jeu de donnée en jeu d'entrainement et de test, afin de réaliser les tests hors lignes demandés après l'entraînement du modèle.
+
+6 - [Décrire]
+
+7 - Après le déploiement, j'ai pu tester l'application avec mon jeu de test, grâce à l'outil de test intégré au service LUIS.
+L'outil permet de visualiser différentes métriques comme les taux de vrais et faux positifs et négatifs, le fscore, le recall ou la precision, pour chaque intent et chaque entity.
+Les résultats sont corrects, avec une précision de plus de 90% sur chaque entity. Le faible taux de 59% de tests passés s'explique par la présence de dates sans rapports avec la date de début ou de fin du voyage dans certains messages.
+Ces cas peu triviaux donnent de mauvais résultats avec le module datetimev2, puisqu'il effectue sa propre labellisation. En pratique les résultats avec des messages génériques sont très satisfaisants.
+Comme le jeu de données est relativement petit, après ces tests j'ai ré-entraîné le modèle avec l'intégralité des données, ce qui semble l'avoir rendu plus robuste.
+
+8 - [Lire]
+
+9 - Les dialogues mis en place sont des dialogues en cascade. Il s'agit d'un mode de discussion guidé, ou chaque étape est une fonction asynchrone.
+Ces fonctions récupèrent le contexte de la fonction qui les précède, c'est à dire la réponse de l'utilisateur, et les éventuelles données gardées en mémoire tout au long de la discussion.
+Dans mon cas, il s'agit d'un objet pouvant contenir les 5 informations recherchées.
+En fin de discussion, la dernière étape consiste à récapituler les information récupérées, et à demander à l'utilisateur si les éléments de sa requête ont bien été correctement identifiés.
+
+10 - Pour utiliser le bot, j'ai installé le bot framework emulator pour ce projet. Il s'agit d'une application conçue spécialement pour converser avec le Bot Framework SDK.
+En plus de pouvoir avoir une discussion avec le bot, le SDK transmet les résultats des requêtes LUIS, et certaines données internes du bot.
+Sans cette interface, il aurait fallu écrire à la main le debug souhaité pour l'avoir dans la console de l'environnement de développement.
+Pour accéder à un bot qui n'est pas en local, l'emulator utilise ngrok, qui est un logiciel de tunnelling sécurisé.
+
+11 - [expliquer]
+
+12 - [lire]
+Pour compléter le déploiement, il a suffit d'ajouter les crédentials de l'application LUIS dans les variables d'environnement, et la commande de démarrage dans la configuration de l'application.
+
+13/17 - [expliquer]
+
+18 - Comme on ne dispose pas de métrique calculatoire pour évaluer le modèle, l’idée est de s’appuyer sur les retours des utilisateurs. On peut remonter à Application Insights les retours positifs et négatifs.
+Ensuite on calcule la fréquence de retours négatifs au cours d’une échéance donnée par exemple sur la semaine passée.
+Dans le cas d’un retour négatif, la conversation est archivée pour permettre une inspection future.
+Ensuite, on place un seuil de 10% de taux de retour négatif, au-delà duquel une alerte sera levée. Ce seuil permettra de constater efficacement d’éventuelles chutes de performances du modèle en production.
+J'ai choisi ce seuil de manière arbitraire en me basant sur les performances actuelles du modèle.
+La phase de mise à jour consistera à étudier les conversations insatisfaisantes pour améliorer le modèle.

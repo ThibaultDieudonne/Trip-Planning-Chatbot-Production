@@ -21,7 +21,6 @@ from trip_finding_recognizer import TripFindingRecognizer
 from helpers.luis_helper import LuisHelper, Intent
 from .trip_finding_dialog import TripFindingDialog
 
-
 class MainDialog(ComponentDialog):
     def __init__(
         self,
@@ -107,7 +106,7 @@ class MainDialog(ComponentDialog):
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         user_review = str(step_context.result).lower()
         if "n" in user_review and not "y" in user_review:
-            self.telemetry_client.track_exception("Bad Answer", properties = {"user_request": step_context.values['user_request']})
+            self.telemetry_client.track_exception("Bad_Answer", properties = {"user_request": step_context.values['user_request']})
         prompt_message = "What else can I do for you?"
         return await step_context.replace_dialog(self.id, prompt_message)
 

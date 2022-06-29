@@ -1,0 +1,18 @@
+Notes:
+
+  Add comtypes to requirements, remove asyncio>=3.4.3
+
+  Use older ngrok version (2.3.40, https://dl.equinox.io/ngrok/ngrok/stable/archive)
+
+  replace C:\Users\Skrell\Anaconda3\envs\bot4\Lib\site-packages\botbuilder\core\telemetry_logger_middleware.py
+     with https://github.com/microsoft/botbuilder-python/blob/main/libraries/botbuilder-core/botbuilder/core/telemetry_logger_middleware.py
+
+  fix deploiement: cocher la case pour les identités managées à la création des ressources (auto luis par ex) + ajouter les variables au déploiement + tout sur US + multitenant sans keyvault + uncomment telemetry
+
+  python -m aiohttp.web -H 0.0.0.0 -P 8000 app:init_func
+
+Issue github: https://github.com/microsoft/botbuilder-python/issues/1938
+
+Depreciated BotFrameworkAdapter: https://docs.microsoft.com/en-us/javascript/api/botbuilder/botframeworkadapter?view=botbuilder-ts-latest
+
+

@@ -6,6 +6,7 @@ from config import DefaultConfig
 
 config = DefaultConfig()
 
+
 class TestAsync(AsyncTestCase, unittest.TestCase):
 
     client = DialogTestClient("test", DIALOG)
@@ -22,7 +23,8 @@ class Test(unittest.TestCase):
     app = init_func(None)
 
     def test_route(self):
-        self.assertEqual([str(x).replace("<PlainResource  ", "")[:-1] for x in self.app.router.resources()][0], "/api/messages")
+        tr = "<PlainResource  "
+        self.assertEqual([str(x).replace(tr, "")[:-1] for x in self.app.router.resources()][0], "/api/messages")
 
     def test_env_vars(self):
         self.assertEqual(config.PORT, 8000)
